@@ -1,3 +1,45 @@
+/* Sidebar Favorites List */
+.sidebar-favorites-list {
+  margin: 1.5rem 0 0 0;
+  padding: 1rem 1.2rem 0.5rem 1.2rem;
+  border-top: 1px solid #f0f0f0;
+}
+.sidebar-favorites-title {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: #e53e3e;
+  margin-bottom: 0.5rem;
+}
+.sidebar-favorites-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar-favorite-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.3em 0;
+  font-size: 0.97em;
+  color: #222;
+}
+.sidebar-favorite-name {
+  font-weight: 500;
+}
+.sidebar-favorite-category {
+  font-size: 0.85em;
+  color: #888;
+}
+/* Favorite button style for heart icon */
+.favorite-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
 /* Sidebar item background wrapper for consistent highlight and sizing */
 .sidebar-item-bg {
   width: 100%;
@@ -175,19 +217,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   justify-content: flex-start;
-  flex: 1 1 0;
-  min-width: 0;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   font-size: 1rem;
 }
-}
+
 /* Ensure sidebar-nav fits sidebar open */
 .sidebar.open .sidebar-nav {
   width: 100%;
-}
 }
 
 .sidebar-item:hover {
@@ -201,7 +236,6 @@
   color: white;
   font-weight: 600;
   justify-content: center;
-}
 }
 
 .sidebar-item.active:hover {
@@ -1553,6 +1587,12 @@
   font-size: 0.875rem;
 }
 
+.favorites-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
 .favorites-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1566,6 +1606,74 @@
   border: 1px solid rgba(72, 187, 120, 0.1);
   transition: all 0.3s ease;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.favorite-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.favorite-category {
+  background: rgba(72, 187, 120, 0.1);
+  color: #38a169;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.favorite-priority {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.favorite-priority.high {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.favorite-priority.medium {
+  background: rgba(251, 191, 36, 0.1);
+  color: #d97706;
+}
+
+.favorite-priority.low {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+}
+
+.favorite-item-card button {
+  background: #48bb78;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.favorite-item-card button:hover {
+  background: #38a169;
+  transform: translateY(-1px);
+}
+
+.favorite-item-card button:last-child {
+  background: #e53e3e;
+}
+
+.favorite-item-card button:last-child:hover {
+  background: #c53030;
 }
 
 .favorite-item-card:hover {

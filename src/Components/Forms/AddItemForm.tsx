@@ -11,11 +11,11 @@ interface AddItemFormProps {
 const AddItemForm: React.FC<AddItemFormProps> = ({ categories, onAddItem, onCancel }) => {
   const [formData, setFormData] = useState<CreateShoppingItemDto>({
     name: '',
-    quantity: 1,
-    unit: 'pieces',
-    price: 0,
+    quantity: undefined as unknown as number,
+    unit: '',
+    price: undefined as unknown as number,
     category: '',
-    priority: 'medium',
+  priority: undefined,
     notes: ''
   });
 
@@ -24,7 +24,16 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ categories, onAddItem, onCanc
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name.trim() || !formData.category) {
+
+    // Validation
+    if (!formData.name.trim() ||
+        !formData.category ||
+        !formData.unit ||
+        !formData.priority ||
+        formData.quantity === undefined || formData.quantity === null || isNaN(formData.quantity) || formData.quantity <= 0 ||
+        formData.price === undefined || formData.price === null || isNaN(formData.price) || formData.price < 0
+    ) {
+      alert('Please fill in all required fields with valid values. Quantity must be > 0, Price must be >= 0, and no field can be empty.');
       return;
     }
 
@@ -51,10 +60,20 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ categories, onAddItem, onCanc
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'quantity' || name === 'price' ? Number(value) : value
-    }));
+    // Prevent leading zeros in number fields
+    if (name === 'quantity' || name === 'price') {
+      let numValue = value.replace(/^0+(?=\d)/, '');
+      if (numValue === '') numValue = '0';
+      setFormData(prev => ({
+        ...prev,
+        [name]: Number(numValue)
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   return (
@@ -83,7 +102,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ categories, onAddItem, onCanc
                 type="number"
                 id="quantity"
                 name="quantity"
-                value={formData.quantity}
+                value={formData.quantity === undefined ? '' : formData.quantity}
                 onChange={handleChange}
                 min="1"
                 required
@@ -98,6 +117,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ categories, onAddItem, onCanc
                 value={formData.unit}
                 onChange={handleChange}
               >
+                <option value="">Select unit</option>
                 <option value="pieces">Pieces</option>
                 <option value="kg">Kg</option>
                 <option value="grams">Grams</option>
@@ -117,7 +137,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ categories, onAddItem, onCanc
                 type="number"
                 id="price"
                 name="price"
-                value={formData.price}
+                value={formData.price === undefined ? '' : formData.price}
                 onChange={handleChange}
                 min="0"
                 step="0.01"
@@ -133,6 +153,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ categories, onAddItem, onCanc
                 value={formData.priority}
                 onChange={handleChange}
               >
+                <option value="">Select priority</option>
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>

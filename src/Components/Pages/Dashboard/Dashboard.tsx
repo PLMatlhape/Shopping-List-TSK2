@@ -48,7 +48,42 @@ const Dashboard: React.FC = () => {
     { id: 'granny', name: 'Granny Avatar', path: '/Image/Granny-avator.png' }
   ];
 
-  const [activeSection, setActiveSection] = useState('dashboard');
+    const [activeSection, setActiveSection] = useState('dashboard');
+    // --- FAVORITES ---
+    const [favoriteItems, setFavoriteItems] = useState<ShoppingItem[]>(() => {
+      try {
+        const stored = localStorage.getItem('favoriteItems');
+        return stored ? JSON.parse(stored) : [];
+      } catch {
+        return [];
+      }
+    });
+
+    useEffect(() => {
+      localStorage.setItem('favoriteItems', JSON.stringify(favoriteItems));
+    }, [favoriteItems]);
+
+    const toggleFavorite = (item: ShoppingItem) => {
+      setFavoriteItems(prev => {
+        if (prev.some(fav => fav.name === item.name && fav.category === item.category && fav.unit === item.unit)) {
+          return prev.filter(fav => !(fav.name === item.name && fav.category === item.category && fav.unit === item.unit));
+        } else {
+          return [...prev, { ...item }];
+        }
+      });
+    };
+
+    const addFavoriteToShoppingList = async (fav: ShoppingItem) => {
+      await addItem({
+        name: fav.name,
+        quantity: fav.quantity,
+        unit: fav.unit,
+        price: fav.price,
+        category: fav.category,
+        priority: fav.priority,
+        notes: fav.notes || ''
+      });
+    };
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [selectedPriority, setSelectedPriority] = useState('All Priorities');
@@ -348,6 +383,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
+
         <nav className="sidebar-nav">
           {sidebarItems.map(({ icon: Icon, label, key }) => (
             <div key={key} className={`sidebar-item-bg${activeSection === key ? ' active' : ''}`}>
@@ -361,6 +397,24 @@ const Dashboard: React.FC = () => {
             </div>
           ))}
         </nav>
+
+        {/* Sidebar Favorites List */}
+        {favoriteItems.length > 0 && (
+          <div className="sidebar-favorites-list">
+            <div className="sidebar-favorites-title">
+              <Heart color="#e53e3e" size={18} style={{ marginRight: 6 }} />
+              <span>Favorites</span>
+            </div>
+            <ul>
+              {favoriteItems.map((fav, idx) => (
+                <li key={fav.name + fav.category + fav.unit + idx} className="sidebar-favorite-item">
+                  <span className="sidebar-favorite-name">{fav.name}</span>
+                  <span className="sidebar-favorite-category">{fav.category}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="sidebar-footer">
           <button className="sidebar-item logout" onClick={handleLogout}>
@@ -629,7 +683,37 @@ const Dashboard: React.FC = () => {
                         <span>R{item.price.toFixed(2)}</span>
                         <small>{item.unit}</small>
                       </div>
-                      {/* Favorite button removed (isFavorite not in type) */}
+                      <div className="item-unit">
+                        <span>{item.unit}</span>
+                      </div>
+                      <button
+                        className={`favorite-btn${favoriteItems.some(fav => fav.name === item.name && fav.category === item.category && fav.unit === item.unit) ? ' marked' : ''}`}
+                        title={favoriteItems.some(fav => fav.name === item.name && fav.category === item.category && fav.unit === item.unit) ? 'Unmark as favorite' : 'Mark as favorite'}
+                        onClick={() => toggleFavorite(item)}
+                      >
+                        {favoriteItems.some(fav => fav.name === item.name && fav.category === item.category && fav.unit === item.unit)
+                          ? <Heart fill="#e53e3e" color="#e53e3e" size={22} />
+                          : <Heart color="#aaa" size={22} />}
+                      </button>
+        {/* Favorites Section */}
+        {favoriteItems.length > 0 && (
+          <section className="favorites-section">
+            <h3>Favorites</h3>
+            <div className="favorites-list">
+              {favoriteItems.map(fav => (
+                <div key={fav.name + fav.category + fav.unit} className="favorite-item-card">
+                  <span className="favorite-name">{fav.name}</span>
+                  <span className="favorite-category">{fav.category}</span>
+                  <span className="favorite-priority">{fav.priority}</span>
+                  <button onClick={() => addFavoriteToShoppingList(fav)}>
+                    Add to Shopping List
+                  </button>
+                  <button onClick={() => toggleFavorite(fav)} title="Remove from favorites">Remove</button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
                     </div>
                   ))
                 )}
@@ -638,8 +722,35 @@ const Dashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Favourite Section */}
-        {/* Favourite section removed (isFavorite not in type) */}
+        {/* Favourites Main Content */}
+        {activeSection === 'favourite' && (
+          <div className="dashboard-content">
+            <section className="favorites-section">
+              <h2>Favorites</h2>
+              {favoriteItems.length === 0 ? (
+                <div className="empty-favorites">
+                  <Heart size={48} color="#eee" />
+                  <h3>No favorites yet</h3>
+                  <p>Mark items as favorite to see them here.</p>
+                </div>
+              ) : (
+                <div className="favorites-list">
+                  {favoriteItems.map(fav => (
+                    <div key={fav.name + fav.category + fav.unit} className="favorite-item-card">
+                      <span className="favorite-name">{fav.name}</span>
+                      <span className="favorite-category">{fav.category}</span>
+                      <span className="favorite-priority">{fav.priority}</span>
+                      <button onClick={() => addFavoriteToShoppingList(fav)}>
+                        Add to Shopping List
+                      </button>
+                      <button onClick={() => toggleFavorite(fav)} title="Remove from favorites">Remove</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
+        )}
 
         {/* Collected/Purchased Section */}
         {activeSection === 'orders' && (
@@ -905,8 +1016,9 @@ const Dashboard: React.FC = () => {
           onCancel={() => setShowAddItemForm(false)}
         />
       )}
+
     </div>
   );
-};
+}
 
 export default Dashboard;
