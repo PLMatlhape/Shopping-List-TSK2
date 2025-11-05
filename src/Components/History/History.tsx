@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Package, ShoppingCart, TrendingUp, Filter, Search } from 'lucide-react';
-import './History.css';
+import './history.css';
 
 interface HistoryItem {
   id: string;
