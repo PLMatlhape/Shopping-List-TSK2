@@ -398,24 +398,6 @@ const Dashboard: React.FC = () => {
           ))}
         </nav>
 
-        {/* Sidebar Favorites List */}
-        {favoriteItems.length > 0 && (
-          <div className="sidebar-favorites-list">
-            <div className="sidebar-favorites-title">
-              <Heart color="#e53e3e" size={18} style={{ marginRight: 6 }} />
-              <span>Favorites</span>
-            </div>
-            <ul>
-              {favoriteItems.map((fav, idx) => (
-                <li key={fav.name + fav.category + fav.unit + idx} className="sidebar-favorite-item">
-                  <span className="sidebar-favorite-name">{fav.name}</span>
-                  <span className="sidebar-favorite-category">{fav.category}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
         <div className="sidebar-footer">
           <button className="sidebar-item logout" onClick={handleLogout}>
             <LogOut size={20} />
