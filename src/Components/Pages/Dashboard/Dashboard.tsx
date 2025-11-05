@@ -687,7 +687,7 @@ const Dashboard: React.FC = () => {
                         <span>{item.unit}</span>
                       </div>
                       <button
-                        className={`favorite-btn${favoriteItems.some(fav => fav.name === item.name && fav.category === item.category && fav.unit === item.unit) ? ' marked' : ''}`}
+                        className="favorite-btn"
                         title={favoriteItems.some(fav => fav.name === item.name && fav.category === item.category && fav.unit === item.unit) ? 'Unmark as favorite' : 'Mark as favorite'}
                         onClick={() => toggleFavorite(item)}
                       >
@@ -695,25 +695,6 @@ const Dashboard: React.FC = () => {
                           ? <Heart fill="#e53e3e" color="#e53e3e" size={22} />
                           : <Heart color="#aaa" size={22} />}
                       </button>
-        {/* Favorites Section */}
-        {favoriteItems.length > 0 && (
-          <section className="favorites-section">
-            <h3>Favorites</h3>
-            <div className="favorites-list">
-              {favoriteItems.map(fav => (
-                <div key={fav.name + fav.category + fav.unit} className="favorite-item-card">
-                  <span className="favorite-name">{fav.name}</span>
-                  <span className="favorite-category">{fav.category}</span>
-                  <span className="favorite-priority">{fav.priority}</span>
-                  <button onClick={() => addFavoriteToShoppingList(fav)}>
-                    Add to Shopping List
-                  </button>
-                  <button onClick={() => toggleFavorite(fav)} title="Remove from favorites">Remove</button>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
                     </div>
                   ))
                 )}
@@ -725,28 +706,105 @@ const Dashboard: React.FC = () => {
         {/* Favourites Main Content */}
         {activeSection === 'favourite' && (
           <div className="dashboard-content">
-            <section className="favorites-section">
-              <h2>Favorites</h2>
+            <section className="collected-section">
+              <div className="section-header">
+                <h2>Favorite Items</h2>
+                <p className="section-subtitle">Your frequently purchased items for quick access</p>
+              </div>
+
               {favoriteItems.length === 0 ? (
-                <div className="empty-favorites">
-                  <Heart size={48} color="#eee" />
-                  <h3>No favorites yet</h3>
-                  <p>Mark items as favorite to see them here.</p>
+                <div className="empty-collected">
+                  <Heart size={48} color="#ddd" />
+                  <h3>No favorite items yet</h3>
+                  <p>Mark items as favorites for quick access and re-ordering</p>
                 </div>
               ) : (
-                <div className="favorites-list">
-                  {favoriteItems.map(fav => (
-                    <div key={fav.name + fav.category + fav.unit} className="favorite-item-card">
-                      <span className="favorite-name">{fav.name}</span>
-                      <span className="favorite-category">{fav.category}</span>
-                      <span className="favorite-priority">{fav.priority}</span>
-                      <button onClick={() => addFavoriteToShoppingList(fav)}>
-                        Add to Shopping List
-                      </button>
-                      <button onClick={() => toggleFavorite(fav)} title="Remove from favorites">Remove</button>
+                <>
+                  <div className="collected-stats">
+                    <div className="stat-card">
+                      <h3>{favoriteItems.length}</h3>
+                      <p>Favorite Items</p>
                     </div>
-                  ))}
-                </div>
+                  </div>
+
+                  <div className="collected-grid">
+                    {favoriteItems.map((fav, index) => (
+                      <div key={fav.name + fav.category + fav.unit + index} className="collected-item-card">
+                        <div className="collected-item-header">
+                          <h3>{fav.name}</h3>
+                          <button 
+                            className="remove-favorite-btn"
+                            onClick={() => toggleFavorite(fav)}
+                            title="Remove from favorites"
+                          >
+                            <Heart fill="#e53e3e" color="#e53e3e" size={20} />
+                          </button>
+                        </div>
+                        <div className="collected-item-details">
+                          <div className="detail-row">
+                            <span className="detail-label">Category:</span>
+                            <span className="detail-value">{fav.category}</span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="detail-label">Priority:</span>
+                            <span className={`priority-badge ${fav.priority}`}>
+                              {fav.priority.toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="detail-label">Quantity:</span>
+                            <input 
+                              type="number" 
+                              min="1"
+                              defaultValue={fav.quantity}
+                              className="favorite-input-qty"
+                              onChange={(e) => {
+                                const newQty = parseInt(e.target.value) || 1;
+                                setFavoriteItems(prev => 
+                                  prev.map(item => 
+                                    item.name === fav.name && item.category === fav.category && item.unit === fav.unit
+                                      ? { ...item, quantity: newQty }
+                                      : item
+                                  )
+                                );
+                              }}
+                            />
+                            <span>{fav.unit}</span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="detail-label">Price:</span>
+                            <span className="price-input-wrapper">
+                              R<input 
+                                type="number" 
+                                min="0"
+                                step="0.01"
+                                defaultValue={fav.price.toFixed(2)}
+                                className="favorite-input-price"
+                                onChange={(e) => {
+                                  const newPrice = parseFloat(e.target.value) || 0;
+                                  setFavoriteItems(prev => 
+                                    prev.map(item => 
+                                      item.name === fav.name && item.category === fav.category && item.unit === fav.unit
+                                        ? { ...item, price: newPrice }
+                                        : item
+                                    )
+                                  );
+                                }}
+                              />
+                            </span>
+                          </div>
+                        </div>
+                        <button 
+                          className="add-to-list-btn"
+                          onClick={() => addFavoriteToShoppingList(fav)}
+                        >
+                          <Plus size={16} />
+                          Add to Shopping List
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </section>
           </div>
